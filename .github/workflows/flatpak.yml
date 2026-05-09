@@ -1,0 +1,23 @@
+name: Flatpak Build and Test
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+jobs:
+  flatpak-test:
+    name: Build and Verify Flatpak
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Flatpak Builder
+      uses: flatpak/flatpak-github-actions/flatpak-builder@v1
+      with:
+        bundle: com.google.GeminiCLI.flatpak
+        manifest-path: com.google.GeminiCLI.yml
+        run-tests: true
+        # The exact command the runner executes to verify the build
+        command: ./test.sh
