@@ -1,0 +1,18 @@
+app-id: com.google.GeminiCLI
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node20
+command: gemini
+modules:
+  - name: gemini-cli
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/node20/bin
+      env:
+        npm_config_nodedir: /usr/lib/sdk/node20
+    build-commands:
+      - npm install -g --offline --prefix=/app @google/gemini-cli
+    sources:
+      - generated-sources.json
