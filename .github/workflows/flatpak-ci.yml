@@ -1,23 +1,25 @@
-name: Flatpak Build and Test
+name: CI
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
 jobs:
-  flatpak-test:
-    name: Build and Verify Flatpak
+  flatpak-builder:
+    name: "Flatpak Builder"
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flatpak/flatpak-github-actions:freedesktop-23.08
+      options: --privileged # Required for ostree sandbox isolation inside Docker
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Set up Flatpak Builder
+    - name: Build and Test Flatpak
       uses: flatpak/flatpak-github-actions/flatpak-builder@v1
       with:
         bundle: com.google.GeminiCLI.flatpak
         manifest-path: com.google.GeminiCLI.yml
         run-tests: true
-        # The exact command the runner executes to verify the build
         command: ./test.sh
