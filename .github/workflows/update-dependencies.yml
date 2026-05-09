@@ -1,0 +1,36 @@
+name: Update Flatpak Dependencies
+on:
+  schedule:
+    - cron: '0 0 * * *' # Run daily at midnight
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node and NPM
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install flatpak-node-generator
+        run: pipx install flatpak-node-generator
+
+      - name: Regenerate Sources
+        run: |
+          npm init -y
+          npm install @google/gemini-cli@latest
+          flatpak-node-generator npm package-lock.json -o generated-sources.json
+          rm package.json package-lock.json
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update gemini-cli dependencies"
+          title: "Update gemini-cli to latest release"
+          body: "Automated update of generated-sources.json to track the latest upstream release."
+          branch: "auto-update-deps"
